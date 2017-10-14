@@ -1,0 +1,32 @@
+
+.categories{
+  text-align: center;
+
+  .all_pizza{
+    font-size:1.8em;
+    color: rgba(56, 56, 57, 0.88);
+    font-weight: 500;
+    .badge{
+      background:@mainColor;
+    }
+  }
+  .navigation{
+    display: inline-block;
+    align-content: center;
+  }
+  .nav {
+    color: @mainColor;
+    li.active{
+      a, a:hover {
+        background-color: @mainColor;
+      }
+    }
+    li a:hover {
+      color: white;
+      background-color: @mainColor;
+    }
+  }
+  a {
+    color: @mainColor;
+  }
+}

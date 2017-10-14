@@ -1,25 +1,83 @@
-@mainColor: blue;
+@mainColor: #EA862E;
+@buttonColor:#ee9f00;
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+  background-color: @buttonColor !important;
+  border-color: @buttonColor !important;
+  outline:none !important;
+}
 
 @import "pizza/pizza-card";
-@cart_width: 300px;
+
+@cart_width: 270px;
+@cartColor: white;
+@footer_height: 120px;
 @header_height: 75px;
-@header_left: 25px;
-@color: orange;
+@header_left: 10px;
 
 body{
   margin-right: @cart_width;
   margin-top:@header_height + 20px;
+  background-color: rgba(255,255,245,0.91);
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  min-width:230px;
 }
 #cart{
   position: fixed;
-  background: @color;
+  background: @cartColor;
   bottom:0;
   top:0;
   right:0;
   width: @cart_width;
+  box-shadow: -1px 0 7px darkgrey;
 }
 .container{
   width:100%;
+
+}
+.discount{
+  position:fixed;
+  bottom: 0;
+  left: 0;
+  margin-left:2px;
+  img{
+    position: absolute;
+    width:@header_height;
+    bottom: @header_height - 1px;
+  }
+  .base{
+    background: @mainColor;
+    height:@header_height;
+    width:@header_height;
+    padding-right: 10px;
+    padding-left: 10px;
+
+    .discount_text{
+      text-align: center;
+      height:@header_height*2/3;
+      font-size: 0.85em;
+      font-weight: bolder;
+      color:white;
+    }
+    .discount_percent{
+      border-top: dotted 1px darken(@mainColor, 15%);
+      padding-top: 1px;
+      text-align: center;
+      height:@header_height/3;
+      font-size: 1em;
+      font-weight: bolder;
+      color:white;
+    }
+
+
+  }
+
+
+
 }
 .header{
   position:fixed;
@@ -27,7 +85,7 @@ body{
   left:0;
   height:@header_height;
   width:100%;
-  background-color: rgba(0,0,0,0.91);
+  background-color: rgba(0,0,0,0.85);
 
   .flag{
 
@@ -37,21 +95,99 @@ body{
       left: @header_left;
       width: @header_height;
       height: @header_height;
-      background: #EA862E;
+      background: @mainColor;
       opacity: 1;
+      color:white;
+      font-size:1.5em;
+      font-weight:normal;
+     text-align:center;
+      padding-top:10px;
 
     }
-
     img{
       position: absolute;
-      top: @header_height - 20px;
+      top: @header_height;
       left: @header_left ;
       width:@header_height;
-      height:100%;
       transform: rotate(180deg);
     }
 
   }
+  .header_content{
+    margin-left: @header_left + @header_height + 2*@header_left;
+    margin-right: 2*@header_left + @cart_width;
 
+    .entrance{
+      position:absolute;
+      top:2px;
+      right:@cart_width + 2 * @header_left;
+      width:@header_height;
+      height:30px;
+      outline:none;
+      text-align:center;
+      background: @buttonColor;
+      border:@buttonColor;
+    }
+
+    .header_up{
+      position:relative;
+      height: @header_height/2;
+      border-bottom: solid 1px rgba(161,161,161,0.91);
+      color:rgba(161,161,161,0.91);
+      padding-top:8px;
+      .phone{
+        font-size:1em;
+
+      }
+      .time{
+        font-size:0.7em;
+        padding-left:10px;
+      }
+      .delivery{
+        font-size:0.9em;
+        padding-left:10px;
+      }
+
+    }
+    .header_down{
+      height: @header_height/2;
+      color:white;
+      padding-top:8px;
+
+    }
+
+  }
+
+}
+.footer{
+  width:100%;
+  height: @footer_height;
+  background: #f6f6f6;
+  box-shadow: 0px -1px 1px rgba(214, 214, 214, 0.75);
+  text-align: center;
+  color:rgba(161,161,161,0.91);
+  padding-top: 35px;
+}
+
+@media (min-width: 1200px){   // very large
+  /*TO DO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+}
+@media (max-width: 992px){   // medium
+  .delivery{
+    display:none;
+  }
+}
+@media (max-width: 768px){  //small
+  .time{
+    display:none;
+  }
+}
+@media (max-width: 576px){  //extra-small
+  .entrance{
+    margin-top: @header_height/2;
+  }
+  .header_down{
+    display:none;
+  }
 
 }

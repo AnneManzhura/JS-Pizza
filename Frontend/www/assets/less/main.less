@@ -1,12 +1,14 @@
 @mainColor: #EA862E;
 @buttonColor:#ee9f00;
-@cart_width: 270px;
+@cart_width: 300px;
 @cartColor: white;
 @footer_height: 120px;
 @header_height: 75px;
 @header_left: 10px;
 
-
+.btn{
+  outline:none !important;
+}
 .btn-primary,
 .btn-primary:hover,
 .btn-primary:active,
@@ -14,14 +16,12 @@
 .btn-primary:focus {
   background-color: @buttonColor !important;
   border-color: @buttonColor !important;
-  outline:none !important;
 }
 
 @import "pizza/pizza-card";
 @import "pizza/cart.less";
 @import "pizza/header&footer.less";
 @import "pizza/navigation.less";
-
 
 body{
   margin-right: @cart_width;
@@ -31,26 +31,31 @@ body{
   min-width:230px;
 }
 
-.container{
-  width:100%;
-}
 
 
 
 @media (min-width: 1200px){   // very large
-  body{
-    background: grey;
+  .container-fluid{
+    max-width:992px;
+  }
+  .header_up {
+    font-size: 1.2em;
   }
 }
+
+
 @media (max-width: 992px){   // medium
   .delivery{
     display:none;
   }
+
 }
 @media (max-width: 768px){  //small
   .time{
     display:none;
   }
+
+
 }
 @media (max-width: 576px){  //extra-small
   .entrance{
@@ -59,5 +64,7 @@ body{
   .header_down{
     display:none;
   }
-
+  .header_up {
+    font-size: 0.8em;
+  }
 }

@@ -33,9 +33,10 @@
       font-size: 0.7em;
       font-weight: 400;
       color: darkgrey;
-      padding-top: @header_height/2 - 3px;
+      padding-top: @header_height/2 - 7px;
       padding-right: 15px;
       float:right;
+      margin-right:10px;
     }
   }
   .footer_cart{
@@ -43,7 +44,7 @@
     bottom:0;
     right:0;
     width:@cart_width;
-    height: @header_height * 1.5 ;
+    height: @footer_height ;
     background: white;
     text-align:center;
     .sum_text{
@@ -56,21 +57,22 @@
     .sum{
       font-size:1.5em;
       font-weight: 500;
-      padding: 15px;
+      padding: 10px;
       float:right;
       color: rgba(56,56,57,0.88);
     }
     .toOrder{
-      width: 85%;
-      padding:10px;
-      margin: 10px;
-      margin-top:0;
+      width: 80%;
+      height: 35%;
+      padding:5px;
+      margin: 5px;
+      font-size: 1.3em;
     }
   }
   .orders {
     position: absolute;
     top:@header_height;
-    bottom : @header_height * 1.5;
+    bottom : @header_height ;
     width:@cart_width;
     overflow-y: scroll;
     overflow-x: hidden;

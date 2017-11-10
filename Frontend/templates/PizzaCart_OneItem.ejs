@@ -1,9 +1,49 @@
+
 <div>
-    <%= pizza.title %> (<%= size %>)
-    <div>Ціна: <%= pizza[size].price %> грн.</div>
-    <div>
-        <button class="btn btn-danger minus">-</button>
-        <span class="label label-default"><%= quantity %></span>
-        <button class="btn btn-success plus">+</button>
+    <div class="header_cart">
+        <span class="count">Замовлення <span class="badge">6</span></span>
+        <button type="button" class="btn btn-link deleteOrders">Очистити замовлення</button>
     </div>
+    <div class="orders ">
+        <div class="oneItem">
+
+
+            <span class="name"> <%= pizza.title %>
+                <% if(size==="small_size") { %>
+                (Мала)</span>
+                <div class="labels">
+                <img src="../www/assets/images/size-icon.svg"><%= pizza.small_size.size %>
+                <img src="../www/assets/images/weight.svg"><%= pizza.small_size.weight %>
+                </div>
+                <% } else if(size==="big_size") {%>
+                (Велика)</span>
+                <div class="labels">
+                <img src="../www/assets/images/size-icon.svg"><%= pizza.big_size.size %>
+                <img src="../www/assets/images/weight.svg"><%= pizza.big_size.weight %>
+                </div>
+                <% } %>
+
+
+
+
+            <div class="actions">
+                <span class="price"><%= pizza[size].price %> грн. </span>
+                <span class="quantity">
+                <button class="btn btn-danger minus">-</button>
+                <span class="labels"><%= quantity %></span>
+                <button class="btn btn-success plus">+</button>
+                </span>
+                <button class="btn btn-success delete">&#x2718;</button>
+            </div>
+            <div class="image"><img src="../www/<%= pizza.icon %>"></div>
+
+        </div>
+
+
+    </div>
+    <div class="footer_cart">
+        <span class="sum_text">Сума замовлення</span><span class="sum">924 грн</span><br>
+        <button class="btn btn-warning toOrder">Замовити</button>
+    </div>
+
 </div>

@@ -23,32 +23,95 @@ function showPizzaList(list) {
         });
         $node.find(".buy-small").click(function(){
             PizzaCart.addToCart(pizza, PizzaCart.PizzaSize.Small);
+
         });
 
         $pizza_list.append($node);
     }
-
     list.forEach(showOnePizza);
+
 }
+
+function isMeat(obj) {
+    if (obj.content.meat)
+        return true;
+    return false;
+}
+function isVega(obj) {
+    if (!obj.content.meat && !obj.content.ocean)
+        return true;
+    return false;
+}
+
+function isOcean(obj) {
+    if (obj.content.ocean)
+        return true;
+    else return false;
+}
+function isPineapple(obj) {
+    if (obj.content.pineapple)
+        return true;
+    else return false;
+}
+function isMush(obj) {
+    if (obj.content.mushroom)
+        return true;
+    else return false;
+}
+
+
+$("li").click(function () {
+    $(".nav").find(".active").removeClass("active");
+    $(this).addClass("active");
+    var type = $(this).find("a").text().trim();
+    switch (type) {
+        case "М'ясні":
+            filterPizza(isMeat);
+            break;
+        case "З ананасами":
+            filterPizza(isPineapple);
+            break;
+        case "З морепродуктами":
+            filterPizza(isOcean);
+            break;
+        case "З грибами":
+            filterPizza(isMush);
+            break;
+        case "Вега":
+            filterPizza(isVega);
+            break;
+        case "Усі":
+            filterPizza();
+            break;
+    }
+
+});
 
 function filterPizza(filter) {
     //Масив куди потраплять піци які треба показати
-    var pizza_shown = [];
+    //TODO: зробити фільтри
 
-    Pizza_List.forEach(function(pizza){
-        //Якщо піка відповідає фільтру
-        //pizza_shown.push(pizza);
+    if (filter) {
+        var pizza_shown = Pizza_List.filter(filter);
 
-        //TODO: зробити фільтри
-    });
+        //Показати відфільтровані піци
+        showPizzaList(pizza_shown);
+        var text=$(".nav").find(".active").find("a").text().trim();
+        $(".type").html(text);
+        $(".badge").html(pizza_shown.length);
 
-    //Показати відфільтровані піци
-    showPizzaList(pizza_shown);
+    }else {showPizzaList(Pizza_List);
+        $(".type").html("Усі піци");
+        $(".badge").html(Pizza_List.length);
+
+    }
+
 }
 
 function initialiseMenu() {
     //Показуємо усі піци
-    showPizzaList(Pizza_List)
+    showPizzaList(Pizza_List);
+    $(".badge").html(Pizza_List.length);
 }
 
 exports.filterPizza = filterPizza;

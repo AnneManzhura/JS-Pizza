@@ -55,7 +55,7 @@ function updateCart() {
     //Тут можна наприклад показати оновлений кошик на екрані та зберегти вміт кошика в Local Storage
 
     //Очищаємо старі піци в кошику
-    $cart.html("");
+    $cart.find(".orders").html("");
 
     //Онволення однієї піци
     function showOnePizzaInCart(cart_item) {

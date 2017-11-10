@@ -6,7 +6,8 @@
   img{
     position: absolute;
     width:@header_height;
-    bottom: @header_height - 1px;
+    bottom: @header_height;
+
   }
   .base{
     background: @mainColor;
@@ -46,10 +47,9 @@
   left:0;
   height:@header_height;
   width:100%;
-  background-color: rgba(0,0,0,0.85);
+  background-color: rgba(0,0,0,0.83);
 
   .flag{
-
     .base {
       position: absolute;
       top: 0;
@@ -79,15 +79,13 @@
     margin-right: 2*@header_left + @cart_width;
     .entrance{
       position:absolute;
-      top:2px;
+      top:10px;
       right:@cart_width + 2 * @header_left;
-      width:60px;
-      height:30px;
+      width:80px;
+      height:35px;
       outline:none;
-      padding-right:10px;
-      padding-left:10px;
-      background: @buttonColor;
-      border:@buttonColor;
+      text-align: center;
+      font-size: 1.2em;
     }
 
     .header_up{

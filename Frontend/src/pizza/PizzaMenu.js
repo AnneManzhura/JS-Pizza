@@ -98,11 +98,11 @@ function filterPizza(filter) {
         showPizzaList(pizza_shown);
         var text=$(".nav").find(".active").find("a").text().trim();
         $(".type").html(text);
-        $(".badge").html(pizza_shown.length);
+        $(".badge_menu").html(pizza_shown.length);
 
     }else {showPizzaList(Pizza_List);
         $(".type").html("Усі піци");
-        $(".badge").html(Pizza_List.length);
+        $(".badge_menu").html(Pizza_List.length);
 
     }
 
@@ -111,7 +111,7 @@ function filterPizza(filter) {
 function initialiseMenu() {
     //Показуємо усі піци
     showPizzaList(Pizza_List);
-    $(".badge").html(Pizza_List.length);
+    $(".badge_menu").html(Pizza_List.length);
 }
 
 exports.filterPizza = filterPizza;

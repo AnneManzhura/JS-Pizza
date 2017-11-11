@@ -1,37 +1,62 @@
 /**
  * Created by chaika on 02.02.16.
  */
+
+/*
+var orders = {};
+//get
+var saved_orders = Storage.get('cart');
+if(saved_orders) {
+    orders = saved_orders;
+    }
+//set
+Storage.set("cart", orders);
+*/
+
 var Templates = require('../Templates');
+var Storage = require('../LocalStorage');
 
 //Перелік розмірів піци
 var PizzaSize = {
     Big: "big_size",
     Small: "small_size"
 };
-
 //Змінна в якій зберігаються перелік піц в кошику
 var Cart = [];
+
+var sum=0;
 
 //HTML едемент куди будуть додаватися піци
 var $cart = $("#cart");
 
 function addToCart(pizza, size) {
     //Додавання однієї піци в кошик покупок
-
-    //Приклад реалізації, можна робити будь-яким іншим способом
-    Cart.push({
-        pizza: pizza,
-        size: size,
-        quantity: 1
-    });
-
+    function samePizza(obj) {
+        return obj.pizza.id === pizza.id && obj.size === size;
+    }
+    var same = Cart.filter(samePizza);
+    if (same.length > 0) {
+        same[0].quantity++;
+    } else {
+        Cart.push({
+            pizza: pizza,
+            size: size,
+            quantity: 1
+        });
+    }
+    sum+=pizza[size].price;
     //Оновити вміст кошика на сторінці
     updateCart();
+
 }
 
 function removeFromCart(cart_item) {
     //Видалити піцу з кошика
-    //TODO: треба зробити
+    var thisSize=cart_item.size;
+    if(thisSize==="big_size") sum-=cart_item.pizza.big_size.price*cart_item.quantity;
+    else sum-=cart_item.pizza.small_size.price*cart_item.quantity;
+
+    Cart.splice(Cart.indexOf(cart_item),1);
 
     //Після видалення оновити відображення
     updateCart();
@@ -41,10 +66,23 @@ function initialiseCart() {
     //Фукнція віпрацьвуватиме при завантаженні сторінки
     //Тут можна наприклад, зчитати вміст корзини який збережено в Local Storage то показати його
     //TODO: ...
+    var saved_orders = Storage.get("cart");
+    if (saved_orders) {
+        Cart = saved_orders;
+        Cart.forEach(calculateSum);
+    }
 
     updateCart();
 }
+function calculateSum(cart_item){
+    var thisSize=cart_item.size;
+    if(thisSize==="big_size")
+        sum+=cart_item.pizza.big_size.price*cart_item.quantity;
+    else
+        sum+=cart_item.pizza.small_size.price*cart_item.quantity;
 
+
+}
 function getPizzaInCart() {
     //Повертає піци які зберігаються в кошику
     return Cart;
@@ -62,21 +100,68 @@ function updateCart() {
         var html_code = Templates.PizzaCart_OneItem(cart_item);
 
         var $node = $(html_code);
+        var thisSize=cart_item.size;
 
         $node.find(".plus").click(function(){
             //Збільшуємо кількість замовлених піц
             cart_item.quantity += 1;
 
+            if(thisSize==="big_size")
+                sum+=cart_item.pizza.big_size.price;
+            else
+                sum+=cart_item.pizza.small_size.price;
+
             //Оновлюємо відображення
             updateCart();
         });
 
-        $cart.append($node);
+
+        $node.find(".minus").click(function(){
+            //Збільшуємо кількість замовлених піц
+
+            if(cart_item.quantity===1)
+                removeFromCart(cart_item);
+            else{
+                cart_item.quantity -= 1;
+
+                if(thisSize==="big_size")
+                    sum-=cart_item.pizza.big_size.price;
+                else
+                    sum-=cart_item.pizza.small_size.price;
+
+            }
+
+            //Оновлюємо відображення
+            updateCart();
+        });
+        $node.find(".delete").click(function(){
+            removeFromCart(cart_item);
+        });
+
+        if(thisSize==="big_size")
+            $node.find(".price").text(cart_item.pizza.big_size.price*cart_item.quantity + " грн");
+
+        else
+            $node.find(".price").text(cart_item.pizza.small_size.price*cart_item.quantity + " грн");
+
+        $cart.find(".orders").append($node);
+
     }
 
     Cart.forEach(showOnePizzaInCart);
 
+    $cart.find(".badge_order").text(Cart.length);
+    $cart.find(".sum").text(sum + " грн");
+
+    Storage.set("cart",	Cart);
 }
+
+
+$(".deleteOrders").click(function () {
+    Cart = [];
+    sum=0;
+    updateCart();
+});
 
 exports.removeFromCart = removeFromCart;
 exports.addToCart = addToCart;

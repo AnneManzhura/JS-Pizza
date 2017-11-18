@@ -4,6 +4,7 @@
 var API_URL = "http://localhost:5050";
 
 function backendGet(url, callback) {
+
     $.ajax({
         url: API_URL + url,
         type: 'GET',
@@ -34,6 +35,7 @@ function backendPost(url, data, callback) {
 exports.getPizzaList = function(callback) {
     backendGet("/api/get-pizza-list/", callback);
 };
+
 
 exports.createOrder = function(order_info, callback) {
     backendPost("/api/create-order/", order_info, callback);

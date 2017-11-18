@@ -2,17 +2,6 @@
  * Created by chaika on 02.02.16.
  */
 
-/*
-var orders = {};
-//get
-var saved_orders = Storage.get('cart');
-if(saved_orders) {
-    orders = saved_orders;
-    }
-//set
-Storage.set("cart", orders);
-*/
-
 var Templates = require('../Templates');
 var Storage = require('../LocalStorage');
 
@@ -95,6 +84,16 @@ function updateCart() {
     //Очищаємо старі піци в кошику
     $cart.find(".orders").html("");
 
+    if(Cart.length===0) {
+        $(".toOrder").attr("disabled", "disabled");
+        console.log("disabled");
+    }
+    else if (Cart.length>0 && $(".toOrder").attr("disabled")==="disabled"){
+        $(".toOrder").prop("disabled", false)
+        console.log("enabled");
+    }
+
+
     //Онволення однієї піци
     function showOnePizzaInCart(cart_item) {
         var html_code = Templates.PizzaCart_OneItem(cart_item);
@@ -162,6 +161,13 @@ $(".deleteOrders").click(function () {
     sum=0;
     updateCart();
 });
+
+$(".toOrder").click(function () {
+    if(Cart.length!==0){
+        location.href="/order.html";
+    }
+});
+
 
 exports.removeFromCart = removeFromCart;
 exports.addToCart = addToCart;

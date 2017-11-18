@@ -5,14 +5,14 @@
                 <% if(size==="small_size") { %>
                 (Мала)</span>
                 <div class="labels">
-                <img src="../www/assets/images/size-icon.svg"><%= pizza.small_size.size %>
-                <img src="../www/assets/images/weight.svg"><%= pizza.small_size.weight %>
+                <img src="assets/images/size-icon.svg"><%= pizza.small_size.size %>
+                <img src="assets/images/weight.svg"><%= pizza.small_size.weight %>
                 </div>
                 <% } else if(size==="big_size") {%>
                 (Велика)</span>
                 <div class="labels">
-                <img src="../www/assets/images/size-icon.svg"><%= pizza.big_size.size %>
-                <img src="../www/assets/images/weight.svg"><%= pizza.big_size.weight %>
+                <img src="assets/images/size-icon.svg"><%= pizza.big_size.size %>
+                <img src="assets/images/weight.svg"><%= pizza.big_size.weight %>
                 </div>
                 <% } %>
             <div class="actions">
@@ -24,7 +24,8 @@
                 </span>
                 <button class="btn btn-default btn-circle delete ">&#x2718;</button>
             </div>
-            <div class="image"><img src="../www/<%= pizza.icon %>"></div>
+
+            <div class="image"><img src="<%= pizza.icon %>"></div>
 
         </div>
 

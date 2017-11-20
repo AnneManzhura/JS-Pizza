@@ -37,7 +37,6 @@ exports.getPizzaList = function(callback) {
     backendGet("/api/get-pizza-list/", callback);
 };
 
-
 exports.createOrder = function(order_info, callback) {
     backendPost("/api/create-order/", order_info, callback);
 };
@@ -571,13 +570,11 @@ function initialiseMenu() {
 exports.filterPizza = filterPizza;
 exports.initialiseMenu = initialiseMenu;
 },{"../API":1,"../Pizza_List":3,"../Templates":4,"./PizzaCart":6}],8:[function(require,module,exports){
-/**
- * Created by sannguyen on 16.11.17.
- */
 
-var api = require('../API');
 var Storage = require('../LocalStorage');
 //var MAP = require('../Maps');
+var API = require('../API');
+
 
 /* Name validation */
 
@@ -666,7 +663,25 @@ function initialise() {
     });
 
     $(".next_step_button").click(function () {
-
+        checkName();
+        checkPhone();
+        //checkAddress();
+        if (checkName() && checkPhone()){
+                    API.createOrder({
+                name: inputName.val(),
+                phone: inputPhone.val(),
+                address: inputAddress.val(),
+                pizzas: Storage.get("cart")
+            }, function (err, res) {
+                if(err){
+                    console.log("Can't create order")
+                }
+            });
+            console.log(Storage.get("cart")) ;
+        }
+        else{
+            console.log("checkFailed") ;
+        }
 
     });
 

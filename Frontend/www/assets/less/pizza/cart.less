@@ -74,7 +74,7 @@
       outline:none;
       width: 70%;
       height: 35%;
-      padding:5px;
+      padding:7px;
       font-size: 1.1em;
     }
   }
@@ -183,6 +183,56 @@
     overflow-x: hidden;
     background: rgba(246,246,248,0.88);
     display: block;
+    .oneItem{
+      width:@cart_width;
+      height: @row_height;
+      border-bottom: solid 1px rgba(223,223,223,0.88);
+      position:relative;
+      padding-top: 10px;
+      padding-left: 20px;
+      .name, .size{
+        color: @mainColor;
+        font-size: 1.5em;
+        font-weight: 500;
+        margin-top: 30px;
+      }
+      .labels{
+        margin-top:10px;
+        img{
+          margin-right:3px;
+          height:12px;
+          width: 12px;
+        }
+        span{
+          margin-right:10px;
+        }
+      }
+      .price_box{
+        margin-top:10px;
+        .price{
+          font-size:1.2em;
+          font-weight: 500;
+        }
+        .pizza_count{
+          margin-left: 5px;
+          font-size:1.2em;
+          font-weight: 500;
+        }
+      }
+      .image{
+        img {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          right: -@row_height * 0.9 / 2;
+          width: @row_height * 0.9;
+          height: @row_height * 0.9;
+          border-radius: 50px;
+
+        }
+      }
+    }
   }
 
 }

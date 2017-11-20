@@ -8,3 +8,5 @@ var ejs = require('ejs');
 exports.PizzaMenu_OneItem = ejs.compile(fs.readFileSync('./Frontend/templates/PizzaMenu_OneItem.ejs', "utf8"));
 
 exports.PizzaCart_OneItem = ejs.compile(fs.readFileSync('./Frontend/templates/PizzaCart_OneItem.ejs', "utf8"));
+
+exports.PizzaOrderCart_OneItem=ejs.compile(fs.readFileSync('./Frontend/templates/PizzaOrderCart_OneItem.ejs', "utf8"));

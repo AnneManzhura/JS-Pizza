@@ -1,12 +1,12 @@
 
 var Storage = require('../LocalStorage');
-//var MAP = require('../Maps');
+var MAP = require('../GoogleMaps');
 var API = require('../API');
 
 
 /* Name validation */
 
-var nameREGEX = /[a-zA-Z-А-ЯЁЇІЄҐа-яіїёє']+$/;
+var nameREGEX = /^[a-zA-Z-А-ЯЁЇІЄҐа-яіїёє']+$/;
 var inputName =$("#inputName");
 var nameGroup = $(".name-group");
 var nameHelp = $(".name-help-block");
@@ -52,30 +52,22 @@ var addressHelp = $(".address-help-block");
 
 var addressInfo=$(".addressInfo");
 var timeInfo=$(".timeInfo");
-/*/!* Adress validation *!/
-var adressInput = $("#inputAdress");
-var adressLabel = $(".label-adress");
-var adressHint = $(".adressHint");
-function checkAdress() {
-    MAP.getFullAddress(adressInput.val(), function (err, adress) {
-        console.log("+ " + adress);
-        if(!err) {
-            adressInput.addClass("valid");
-            adressInput.removeClass("invalid");
-            adressLabel.addClass("valid");
-            adressLabel.removeClass("invalid");
-            adressHint.addClass("none");
-            return true;
-        } else {
-            adressInput.removeClass("valid");
-            adressInput.addClass("invalid");
-            adressLabel.addClass("invalid");
-            adressLabel.removeClass("valid");
-            adressHint.removeClass("none");
-            return false;
-        }
-    });
-}*/
+
+function checkAddress() {
+    if(inputAddress.val().trim()!==""){
+        addressGroup.removeClass("has-error");
+        addressGroup.addClass("has-success");
+        addressHelp.addClass("none");
+        return true;
+    }
+    else {
+        addressGroup.removeClass("has-success");
+        addressGroup.addClass("has-error");
+        addressHelp.removeClass("none");
+        return false;
+    }
+
+}
 
 
 function initialise() {
@@ -85,16 +77,33 @@ function initialise() {
     inputPhone.bind("input", function () {
         checkPhone();
     });
+
     inputAddress.bind("input", function () {
         addressInfo.text(inputAddress.val());
-
+        MAP.geocodeAddress(inputAddress.val(), function (err, coordinates) {
+            if(err){
+                console.log("Can't find address");
+            } else {
+                MAP.setMarker(coordinates);
+                MAP.calculateRoute(new google.maps.LatLng(50.464379, 30.519131), coordinates, function (err, res) {
+                    if (res) {
+                        timeInfo.text(res);
+                    } else {
+                        timeInfo.text(" невідомий");
+                        addressInfo.text(" невідома");
+                    }
+                });
+            }
+        });
+        checkAddress();
     });
+
 
     $(".next_step_button").click(function () {
         checkName();
         checkPhone();
-        //checkAddress();
-        if (checkName() && checkPhone()){
+        checkAddress();
+        if (checkName() && checkPhone() && checkAddress()){
                     API.createOrder({
                 name: inputName.val(),
                 phone: inputPhone.val(),
@@ -106,6 +115,7 @@ function initialise() {
                 }
             });
             console.log(Storage.get("cart")) ;
+            alert ("DONE");
         }
         else{
             console.log("checkFailed") ;
@@ -113,36 +123,8 @@ function initialise() {
 
     });
 
-   /* $("#inputAdress").bind("input", function () {
-        console.log(adressInput.val());
-        MAP.geocodeAddress(adressInput.val(), function (err, coordinates) {
-            if(err){
-                console.log("Can't find adress")
-            } else {
-                MAP.setMarker(coordinates);
-                MAP.calculateRoute(new google.maps.LatLng(50.464379, 30.519131), coordinates, function (err, res) {
-                    if (res) {
-                        $(".order-summery-time").html("<b>Приблизний час доставки:</b> " + res);
-                        MAP.getFullAddress(adressInput.val(), function (err, adress) {
-                            if(!err) {
-                                console.log(adress);
-                                $(".order-summery-adress").html("<b>Адреса доставки:</b> " + adress);
-                            }
-                        });
-                    } else {
-                        $(".order-summery-time").html("<b>Приблизний час доставки:</b> -/-");
-                        $(".order-summery-adress").html("<b>Адреса доставки:</b> -/-");
-                    }
-                });
-            }
-        });
-    });*/
-
-
 }
 
 
 exports.initialiseOrder = initialise;
-/*
-exports.setAdress = setAdress;
-exports.checkAdress = checkAdress;*/
+exports.checkAddress = checkAddress;

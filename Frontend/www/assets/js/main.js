@@ -42,6 +42,318 @@ exports.createOrder = function(order_info, callback) {
 };
 
 },{}],2:[function(require,module,exports){
+
+
+
+var PizzaOrder = require("./pizza/PizzaOrder");
+
+
+var styledMapType = new google.maps.StyledMapType(
+    [
+        {
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#242f3e"
+                }
+            ]
+        },
+        {
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#746855"
+                }
+            ]
+        },
+        {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+                {
+                    "color": "#242f3e"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative.locality",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#d59563"
+                }
+            ]
+        },
+        {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#d59563"
+                }
+            ]
+        },
+        {
+            "featureType": "poi.park",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#263c3f"
+                }
+            ]
+        },
+        {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#6b9a76"
+                }
+            ]
+        },
+        {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#38414e"
+                }
+            ]
+        },
+        {
+            "featureType": "road",
+            "elementType": "geometry.stroke",
+            "stylers": [
+                {
+                    "color": "#212a37"
+                }
+            ]
+        },
+        {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#9ca5b3"
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#746855"
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+                {
+                    "color": "#1f2835"
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#f3d19c"
+                }
+            ]
+        },
+        {
+            "featureType": "transit",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#2f3948"
+                }
+            ]
+        },
+        {
+            "featureType": "transit.station",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#d59563"
+                }
+            ]
+        },
+        {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#17263c"
+                }
+            ]
+        },
+        {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#515c6d"
+                }
+            ]
+        },
+        {
+            "featureType": "water",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+                {
+                    "color": "#17263c"
+                }
+            ]
+        }
+    ],
+    {name: 'Styled Map'});
+
+
+var map;
+var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
+
+
+function geocodeLatLng(latlng, callback){
+//Модуль за роботу з адресою
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'location': latlng}, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK && results[1]) {
+            var adress = results[1].formatted_address;
+            callback(null, adress);
+        } else {
+            callback(new Error("Can't find adress")); }
+    }); }
+
+
+function geocodeAddress(adress, callback){
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': adress},
+        function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK && results[0]) {
+            var coordinates = results[0].geometry.location;
+            callback(null, coordinates);
+        } else {
+            callback(new Error("Can not find the adress")); }
+    });
+}
+
+function getFullAddress(adress, callback) {
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': adress}, function (results, status) {
+        if (status === google.maps.GeocoderStatus.OK && results[0]) {
+            var adress = results[0].formatted_address;
+            callback(null, adress);
+        } else {
+            callback(new Error("Can not find the adress"));
+        }
+    });
+}
+
+function calculateRoute(A_latlng, B_latlng, callback) {
+    var directionService = new google.maps.DirectionsService();
+    directionService.route({
+        origin: A_latlng,
+        destination: B_latlng,
+        travelMode: google.maps.TravelMode["DRIVING"]
+    }, function (response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            var leg = response.routes[0].legs[0];
+            directionsDisplay.setDirections(response);
+            callback(null, leg.duration.text);
+        } else {
+            callback(new Error("Cannot find direction"));
+        }
+    });
+}
+
+var homeMarker = null;
+function setMarker(coordinates) {
+    if (homeMarker) {
+        homeMarker.setMap(null);
+        homeMarker = null;
+    }
+
+    homeMarker = new google.maps.Marker({
+        position: coordinates,
+        map: map,
+        icon: "assets/images/home-icon.png"
+    });
+}
+
+function initialiseMaps() {
+
+
+
+
+    var mapProp = {
+        center: new google.maps.LatLng(50.464379,30.519131),
+        zoom: 15,
+        mapTypeControlOptions: {
+            mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain',
+                'styled_map']
+        }
+    };
+
+    var html_element = document.getElementById("googleMap");
+
+    map=new google.maps.Map(html_element, mapProp); //Карта створена і показана
+
+    map.mapTypes.set('styled_map', styledMapType);
+    map.setMapTypeId('styled_map');
+
+    var point = new google.maps.LatLng(50.464379,30.519131);
+
+    var marker = new google.maps.Marker({
+        position: point,
+        map: map,   //map - це змінна карти створена за допомогою new google.maps.Map(...)
+        icon: "assets/images/map-icon.png"
+    });
+
+    directionsDisplay.setMap(map);
+
+    google.maps.event.addListener(map, 'click',function(me){
+        var coordinates = me.latLng;
+        geocodeLatLng(coordinates, function(err, adress){
+            if (!err) {
+                $("#inputAdress").val(adress);
+                setMarker(coordinates);
+                calculateRoute(new google.maps.LatLng(50.464379, 30.519131), coordinates, function (err, res) {
+                    if (res) {
+                        $(".timeInfo").text(res);
+                        $(".addressInfo").text(adress);
+                    } else {
+                        $(".timeInfo").text(" невідомий");
+                        $(".addressInfo").text(" невідома");
+                    }
+                });
+                PizzaOrder.checkAddress();
+            } else {
+                console.log("Can't find address")
+            }
+        })
+    });
+
+}
+
+function init(){
+
+}
+
+
+
+
+
+exports.initialiseMaps=initialiseMaps;
+exports.geocodeAddress=geocodeAddress;
+exports.setMarker=setMarker;
+exports.calculateRoute=calculateRoute;
+exports.geocodeLatLng=geocodeLatLng;
+exports.getFullAddress = getFullAddress;
+},{"./pizza/PizzaOrder":9}],3:[function(require,module,exports){
 var basil = require('basil.js');
 basil = new basil();
 
@@ -53,7 +365,7 @@ exports.get = function(key) {
 
 exports.set = function(key, value) {
     return basil.set(key, value); };
-},{"basil.js":9}],3:[function(require,module,exports){
+},{"basil.js":10}],4:[function(require,module,exports){
 /**
  * Created by diana on 12.01.16.
  */
@@ -232,7 +544,7 @@ var pizza_info = [
 
 module.exports = pizza_info;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Created by chaika on 02.02.16.
  */
@@ -245,23 +557,28 @@ exports.PizzaMenu_OneItem = ejs.compile("<%\n\nfunction getIngredientsArray(pizz
 exports.PizzaCart_OneItem = ejs.compile("\n\n        <div class=\"oneItem\">\n            <span class=\"name\"> <%= pizza.title %>\n                <% if(size===\"small_size\") { %>\n                (Мала)</span>\n                <div class=\"labels\">\n                <img src=\"assets/images/size-icon.svg\"><%= pizza.small_size.size %>\n                <img src=\"assets/images/weight.svg\"><%= pizza.small_size.weight %>\n                </div>\n                <% } else if(size===\"big_size\") {%>\n                (Велика)</span>\n                <div class=\"labels\">\n                <img src=\"assets/images/size-icon.svg\"><%= pizza.big_size.size %>\n                <img src=\"assets/images/weight.svg\"><%= pizza.big_size.weight %>\n                </div>\n                <% } %>\n            <div class=\"actions\">\n                <span class=\"price\"><%= pizza[size].price %> грн. </span>\n                <span class=\"quantity\">\n                <button class=\"btn btn-danger btn-circle minus\">-</button>\n                <span class=\"labels\"><%= quantity %></span>\n                <button class=\"btn btn-success btn-circle plus\">+</button>\n                </span>\n                <button class=\"btn btn-default btn-circle delete \">&#x2718;</button>\n            </div>\n\n            <div class=\"image\"><img src=\"<%= pizza.icon %>\"></div>\n\n        </div>\n\n");
 
 exports.PizzaOrderCart_OneItem=ejs.compile("\n\n\n<div class=\"oneItem\">\n            <span class=\"name\"> <%= pizza.title %>\n                <% if(size===\"small_size\") { %>\n                (Мала)</span>\n    <div class=\"labels\">\n        <img src=\"assets/images/size-icon.svg\"><%= pizza.small_size.size %>\n        <img src=\"assets/images/weight.svg\"><%= pizza.small_size.weight %>\n    </div>\n    <% } else if(size===\"big_size\") {%>\n    (Велика)</span>\n    <div class=\"labels\">\n        <img src=\"assets/images/size-icon.svg\"><%= pizza.big_size.size %>\n        <img src=\"assets/images/weight.svg\"><%= pizza.big_size.weight %>\n    </div>\n    <% } %>\n\n    <div class=\"price_box\">\n        <span class=\"price\"><%= pizza[size].price %> грн. </span>\n        <span class=\"pizza_count\"><%= quantity %>\n            <% if(quantity===1) { %>\n            піца\n            <% } else if(quantity>=1 && quantity<=4) {%>\n            піци\n            <% }else { %>\n                піц\n            <% } %>\n        </span>\n    </div>\n\n    <div class=\"image\"><img src=\"<%= pizza.icon %>\"></div>\n\n</div>\n\n\n");
-},{"ejs":11}],5:[function(require,module,exports){
+},{"ejs":12}],6:[function(require,module,exports){
 /**
  * Created by chaika on 25.01.16.
  */
 
 $(function(){
     //This code will execute when the page is ready
+
     var PizzaMenu = require('./pizza/PizzaMenu');
     var PizzaCart = require('./pizza/PizzaCart');
     var PizzaOrder = require('./pizza/PizzaOrder');
-    var Pizza_List = require('./Pizza_List');
+    var Map=require('./GoogleMaps');
+    //var Pizza_List = require('./Pizza_List');
 
     PizzaCart.initialiseCart();
     PizzaMenu.initialiseMenu();
     PizzaOrder.initialiseOrder();
+
+    google.maps.event.addDomListener(window, 'load', Map.initialiseMaps());
+
 });
-},{"./Pizza_List":3,"./pizza/PizzaCart":6,"./pizza/PizzaMenu":7,"./pizza/PizzaOrder":8}],6:[function(require,module,exports){
+},{"./GoogleMaps":2,"./pizza/PizzaCart":7,"./pizza/PizzaMenu":8,"./pizza/PizzaOrder":9}],7:[function(require,module,exports){
 /**
  * Created by chaika on 02.02.16.
  */
@@ -442,7 +759,7 @@ exports.getPizzaInCart = getPizzaInCart;
 exports.initialiseCart = initialiseCart;
 
 exports.PizzaSize = PizzaSize;
-},{"../LocalStorage":2,"../Templates":4}],7:[function(require,module,exports){
+},{"../LocalStorage":3,"../Templates":5}],8:[function(require,module,exports){
 /**
  * Created by chaika on 02.02.16.
  */
@@ -569,16 +886,16 @@ function initialiseMenu() {
 
 exports.filterPizza = filterPizza;
 exports.initialiseMenu = initialiseMenu;
-},{"../API":1,"../Pizza_List":3,"../Templates":4,"./PizzaCart":6}],8:[function(require,module,exports){
+},{"../API":1,"../Pizza_List":4,"../Templates":5,"./PizzaCart":7}],9:[function(require,module,exports){
 
 var Storage = require('../LocalStorage');
-//var MAP = require('../Maps');
+var MAP = require('../GoogleMaps');
 var API = require('../API');
 
 
 /* Name validation */
 
-var nameREGEX = /[a-zA-Z-А-ЯЁЇІЄҐа-яіїёє']+$/;
+var nameREGEX = /^[a-zA-Z-А-ЯЁЇІЄҐа-яіїёє']+$/;
 var inputName =$("#inputName");
 var nameGroup = $(".name-group");
 var nameHelp = $(".name-help-block");
@@ -624,30 +941,22 @@ var addressHelp = $(".address-help-block");
 
 var addressInfo=$(".addressInfo");
 var timeInfo=$(".timeInfo");
-/*/!* Adress validation *!/
-var adressInput = $("#inputAdress");
-var adressLabel = $(".label-adress");
-var adressHint = $(".adressHint");
-function checkAdress() {
-    MAP.getFullAddress(adressInput.val(), function (err, adress) {
-        console.log("+ " + adress);
-        if(!err) {
-            adressInput.addClass("valid");
-            adressInput.removeClass("invalid");
-            adressLabel.addClass("valid");
-            adressLabel.removeClass("invalid");
-            adressHint.addClass("none");
-            return true;
-        } else {
-            adressInput.removeClass("valid");
-            adressInput.addClass("invalid");
-            adressLabel.addClass("invalid");
-            adressLabel.removeClass("valid");
-            adressHint.removeClass("none");
-            return false;
-        }
-    });
-}*/
+
+function checkAddress() {
+    if(inputAddress.val().trim()!==""){
+        addressGroup.removeClass("has-error");
+        addressGroup.addClass("has-success");
+        addressHelp.addClass("none");
+        return true;
+    }
+    else {
+        addressGroup.removeClass("has-success");
+        addressGroup.addClass("has-error");
+        addressHelp.removeClass("none");
+        return false;
+    }
+
+}
 
 
 function initialise() {
@@ -657,16 +966,33 @@ function initialise() {
     inputPhone.bind("input", function () {
         checkPhone();
     });
+
     inputAddress.bind("input", function () {
         addressInfo.text(inputAddress.val());
-
+        MAP.geocodeAddress(inputAddress.val(), function (err, coordinates) {
+            if(err){
+                console.log("Can't find address");
+            } else {
+                MAP.setMarker(coordinates);
+                MAP.calculateRoute(new google.maps.LatLng(50.464379, 30.519131), coordinates, function (err, res) {
+                    if (res) {
+                        timeInfo.text(res);
+                    } else {
+                        timeInfo.text(" невідомий");
+                        addressInfo.text(" невідома");
+                    }
+                });
+            }
+        });
+        checkAddress();
     });
+
 
     $(".next_step_button").click(function () {
         checkName();
         checkPhone();
-        //checkAddress();
-        if (checkName() && checkPhone()){
+        checkAddress();
+        if (checkName() && checkPhone() && checkAddress()){
                     API.createOrder({
                 name: inputName.val(),
                 phone: inputPhone.val(),
@@ -678,6 +1004,7 @@ function initialise() {
                 }
             });
             console.log(Storage.get("cart")) ;
+            alert ("DONE");
         }
         else{
             console.log("checkFailed") ;
@@ -685,77 +1012,13 @@ function initialise() {
 
     });
 
-   /* $("#inputAdress").bind("input", function () {
-        console.log(adressInput.val());
-        MAP.geocodeAddress(adressInput.val(), function (err, coordinates) {
-            if(err){
-                console.log("Can't find adress")
-            } else {
-                MAP.setMarker(coordinates);
-                MAP.calculateRoute(new google.maps.LatLng(50.464379, 30.519131), coordinates, function (err, res) {
-                    if (res) {
-                        $(".order-summery-time").html("<b>Приблизний час доставки:</b> " + res);
-                        MAP.getFullAddress(adressInput.val(), function (err, adress) {
-                            if(!err) {
-                                console.log(adress);
-                                $(".order-summery-adress").html("<b>Адреса доставки:</b> " + adress);
-                            }
-                        });
-                    } else {
-                        $(".order-summery-time").html("<b>Приблизний час доставки:</b> -/-");
-                        $(".order-summery-adress").html("<b>Адреса доставки:</b> -/-");
-                    }
-                });
-            }
-        });
-    });*/
-
-   /* $(".next_step_button").click(function () {
-
-        /!*checkName();*!/
-        checkPhone();
-        //checkAdress();
-        //if (checkName() && checkPhone() && checkAdress()){
-            if ( checkPhone()){
-            /!*api.createOrder({
-                name: nameInput.val(),
-                phone: phoneInput.val(),
-                adress: adressInput.val(),
-                pizzas: Storage.get("cart")
-            }, function (err, res) {
-
-                if(err){
-                    console.log("Can't create order")
-                }
-            });*!/
-            alert("Success PHONE");
-        } else {
-            /!*$("#inputName").bind("input", function () {
-                checkName();
-            });*!/
-
-            $("#inputPhone").bind("input", function () {
-                checkPhone();
-            });
-
-           /!* $("#inputAdress").bind("input", function () {
-                checkAdress();
-            });*!/
-        }
-
-    });*/
 }
-/*
-function setAdress(value) {
-    adressInput.val(value);
-}*/
+
 
 exports.initialiseOrder = initialise;
-/*
-exports.setAdress = setAdress;
-exports.checkAdress = checkAdress;*/
+exports.checkAddress = checkAddress;
 
-},{"../API":1,"../LocalStorage":2}],9:[function(require,module,exports){
+},{"../API":1,"../GoogleMaps":2,"../LocalStorage":3}],10:[function(require,module,exports){
 (function () {
 	// Basil
 	var Basil = function (options) {
@@ -1143,9 +1406,9 @@ exports.checkAdress = checkAdress;*/
 
 })();
 
-},{}],10:[function(require,module,exports){
-
 },{}],11:[function(require,module,exports){
+
+},{}],12:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -2013,7 +2276,7 @@ if (typeof window != 'undefined') {
   window.ejs = exports;
 }
 
-},{"../package.json":13,"./utils":12,"fs":10,"path":14}],12:[function(require,module,exports){
+},{"../package.json":14,"./utils":13,"fs":11,"path":15}],13:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -2179,7 +2442,7 @@ exports.cache = {
   }
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -2294,7 +2557,7 @@ module.exports={
   "version": "2.5.7"
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2522,7 +2785,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":15}],15:[function(require,module,exports){
+},{"_process":16}],16:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2708,4 +2971,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[5]);
+},{}]},{},[6]);

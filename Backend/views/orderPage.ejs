@@ -1,6 +1,5 @@
 <% include common/header.ejs %>
 
-
 <div class="container-fluid">
 
     <div class="row order_panel">
@@ -19,10 +18,10 @@
                         <div class="form-group name-group">
                             <label class="col-sm-2 name_label control-label" style="text-align: center">Ім’я</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" id="inputName" placeholder="Ім’я Прізвище">
+                                <input class="form-control" type="text" id="inputName" placeholder="Ім’я">
                             </div>
                             <span class="name-help-block help-block none" style="margin-left:20%;">
-                                Введіть тільки власне ім’я та прізвище, без цифр та пробілів у кінці
+                                Введіть тільки власне ім’я, без цифр
                             </span>
                         </div>
 
@@ -74,7 +73,7 @@
             </div>
         </div>
 
-        <div class="google-maps" id="googleMap">
+        <div id="googleMap" style="height:330px; width:100%; margin-top:30px;">
         </div>
 
 
@@ -93,6 +92,9 @@
         <a type="button" class="btn btn-default toEdit" style="background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);"  onClick='location.href="/"'>Редагувати замовлення</a>
     </div>
 </div>
+
+
+
 
 
 <% include common/footer.ejs %>

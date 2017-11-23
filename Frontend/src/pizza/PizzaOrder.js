@@ -2,7 +2,7 @@
 var Storage = require('../LocalStorage');
 var MAP = require('../GoogleMaps');
 var API = require('../API');
-
+var LiqPay = require("../LiqPay");
 
 /* Name validation */
 
@@ -104,25 +104,26 @@ function initialise() {
         checkPhone();
         checkAddress();
         if (checkName() && checkPhone() && checkAddress()){
-                    API.createOrder({
+            API.createOrder({
                 name: inputName.val(),
                 phone: inputPhone.val(),
                 address: inputAddress.val(),
                 pizzas: Storage.get("cart")
             }, function (err, res) {
                 if(err){
-                    console.log("Can't create order")
+                    console.log("Can't create order");
                 }
+                else{
+                    window.LiqPayCheckoutCallback = LiqPay.initialise(res.data, res.signature);
+                    }
             });
-            console.log(Storage.get("cart")) ;
-            alert ("DONE");
+            //console.log(Storage.get("cart")) ;
         }
         else{
             console.log("checkFailed") ;
         }
 
     });
-
 }
 
 

@@ -15,6 +15,11 @@ $(function(){
     PizzaMenu.initialiseMenu();
     PizzaOrder.initialiseOrder();
 
-    google.maps.event.addDomListener(window, 'load', Map.initialiseMaps());
+   // Map.initialiseMaps();
+
+   // google.maps.event.addDomListener(window, 'load', Map.initialiseMaps());
+
+
+
 
 });

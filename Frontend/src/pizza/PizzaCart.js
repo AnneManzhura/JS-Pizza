@@ -87,11 +87,9 @@ function updateCart() {
 
     if(Cart.length===0) {
         $(".toOrder").attr("disabled", "disabled");
-        console.log("disabled");
     }
     else if (Cart.length>0 && $(".toOrder").attr("disabled")==="disabled"){
         $(".toOrder").prop("disabled", false)
-        console.log("enabled");
     }
 
 

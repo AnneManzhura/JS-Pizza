@@ -287,8 +287,6 @@ function setMarker(coordinates) {
 function initialiseMaps() {
 
 
-
-
     var mapProp = {
         center: new google.maps.LatLng(50.464379,30.519131),
         zoom: 15,
@@ -339,12 +337,7 @@ function initialiseMaps() {
 
 }
 
-function init(){
-
-}
-
-
-
+google.maps.event.addDomListener(window, 'load', initialiseMaps);
 
 
 exports.initialiseMaps=initialiseMaps;
@@ -353,7 +346,25 @@ exports.setMarker=setMarker;
 exports.calculateRoute=calculateRoute;
 exports.geocodeLatLng=geocodeLatLng;
 exports.getFullAddress = getFullAddress;
-},{"./pizza/PizzaOrder":9}],3:[function(require,module,exports){
+},{"./pizza/PizzaOrder":10}],3:[function(require,module,exports){
+
+function initialise(data, signature) {
+    LiqPayCheckout.init({
+        data: data,
+        signature: signature,
+        embedTo: "#liqpay",
+        mode: "popup" // embed || popup
+    }).on("liqpay.callback", function (data) {
+        console.log(data.status);
+        console.log(data);
+    }).on("liqpay.ready", function (data) { // ready
+    }).on("liqpay.close", function (data) {
+// close
+    });
+}
+exports.initialise=initialise;
+
+},{}],4:[function(require,module,exports){
 var basil = require('basil.js');
 basil = new basil();
 
@@ -365,7 +376,7 @@ exports.get = function(key) {
 
 exports.set = function(key, value) {
     return basil.set(key, value); };
-},{"basil.js":10}],4:[function(require,module,exports){
+},{"basil.js":11}],5:[function(require,module,exports){
 /**
  * Created by diana on 12.01.16.
  */
@@ -544,7 +555,7 @@ var pizza_info = [
 
 module.exports = pizza_info;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Created by chaika on 02.02.16.
  */
@@ -557,7 +568,7 @@ exports.PizzaMenu_OneItem = ejs.compile("<%\n\nfunction getIngredientsArray(pizz
 exports.PizzaCart_OneItem = ejs.compile("\n\n        <div class=\"oneItem\">\n            <span class=\"name\"> <%= pizza.title %>\n                <% if(size===\"small_size\") { %>\n                (Мала)</span>\n                <div class=\"labels\">\n                <img src=\"assets/images/size-icon.svg\"><%= pizza.small_size.size %>\n                <img src=\"assets/images/weight.svg\"><%= pizza.small_size.weight %>\n                </div>\n                <% } else if(size===\"big_size\") {%>\n                (Велика)</span>\n                <div class=\"labels\">\n                <img src=\"assets/images/size-icon.svg\"><%= pizza.big_size.size %>\n                <img src=\"assets/images/weight.svg\"><%= pizza.big_size.weight %>\n                </div>\n                <% } %>\n            <div class=\"actions\">\n                <span class=\"price\"><%= pizza[size].price %> грн. </span>\n                <span class=\"quantity\">\n                <button class=\"btn btn-danger btn-circle minus\">-</button>\n                <span class=\"labels\"><%= quantity %></span>\n                <button class=\"btn btn-success btn-circle plus\">+</button>\n                </span>\n                <button class=\"btn btn-default btn-circle delete \">&#x2718;</button>\n            </div>\n\n            <div class=\"image\"><img src=\"<%= pizza.icon %>\"></div>\n\n        </div>\n\n");
 
 exports.PizzaOrderCart_OneItem=ejs.compile("\n\n\n<div class=\"oneItem\">\n            <span class=\"name\"> <%= pizza.title %>\n                <% if(size===\"small_size\") { %>\n                (Мала)</span>\n    <div class=\"labels\">\n        <img src=\"assets/images/size-icon.svg\"><%= pizza.small_size.size %>\n        <img src=\"assets/images/weight.svg\"><%= pizza.small_size.weight %>\n    </div>\n    <% } else if(size===\"big_size\") {%>\n    (Велика)</span>\n    <div class=\"labels\">\n        <img src=\"assets/images/size-icon.svg\"><%= pizza.big_size.size %>\n        <img src=\"assets/images/weight.svg\"><%= pizza.big_size.weight %>\n    </div>\n    <% } %>\n\n    <div class=\"price_box\">\n        <span class=\"price\"><%= pizza[size].price %> грн. </span>\n        <span class=\"pizza_count\"><%= quantity %>\n            <% if(quantity===1) { %>\n            піца\n            <% } else if(quantity>=1 && quantity<=4) {%>\n            піци\n            <% }else { %>\n                піц\n            <% } %>\n        </span>\n    </div>\n\n    <div class=\"image\"><img src=\"<%= pizza.icon %>\"></div>\n\n</div>\n\n\n");
-},{"ejs":12}],6:[function(require,module,exports){
+},{"ejs":13}],7:[function(require,module,exports){
 /**
  * Created by chaika on 25.01.16.
  */
@@ -575,10 +586,15 @@ $(function(){
     PizzaMenu.initialiseMenu();
     PizzaOrder.initialiseOrder();
 
-    google.maps.event.addDomListener(window, 'load', Map.initialiseMaps());
+   // Map.initialiseMaps();
+
+   // google.maps.event.addDomListener(window, 'load', Map.initialiseMaps());
+
+
+
 
 });
-},{"./GoogleMaps":2,"./pizza/PizzaCart":7,"./pizza/PizzaMenu":8,"./pizza/PizzaOrder":9}],7:[function(require,module,exports){
+},{"./GoogleMaps":2,"./pizza/PizzaCart":8,"./pizza/PizzaMenu":9,"./pizza/PizzaOrder":10}],8:[function(require,module,exports){
 /**
  * Created by chaika on 02.02.16.
  */
@@ -668,11 +684,9 @@ function updateCart() {
 
     if(Cart.length===0) {
         $(".toOrder").attr("disabled", "disabled");
-        console.log("disabled");
     }
     else if (Cart.length>0 && $(".toOrder").attr("disabled")==="disabled"){
         $(".toOrder").prop("disabled", false)
-        console.log("enabled");
     }
 
 
@@ -759,7 +773,7 @@ exports.getPizzaInCart = getPizzaInCart;
 exports.initialiseCart = initialiseCart;
 
 exports.PizzaSize = PizzaSize;
-},{"../LocalStorage":3,"../Templates":5}],8:[function(require,module,exports){
+},{"../LocalStorage":4,"../Templates":6}],9:[function(require,module,exports){
 /**
  * Created by chaika on 02.02.16.
  */
@@ -886,12 +900,12 @@ function initialiseMenu() {
 
 exports.filterPizza = filterPizza;
 exports.initialiseMenu = initialiseMenu;
-},{"../API":1,"../Pizza_List":4,"../Templates":5,"./PizzaCart":7}],9:[function(require,module,exports){
+},{"../API":1,"../Pizza_List":5,"../Templates":6,"./PizzaCart":8}],10:[function(require,module,exports){
 
 var Storage = require('../LocalStorage');
 var MAP = require('../GoogleMaps');
 var API = require('../API');
-
+var LiqPay = require("../LiqPay");
 
 /* Name validation */
 
@@ -993,7 +1007,7 @@ function initialise() {
         checkPhone();
         checkAddress();
         if (checkName() && checkPhone() && checkAddress()){
-                    API.createOrder({
+            API.createOrder({
                 name: inputName.val(),
                 phone: inputPhone.val(),
                 address: inputAddress.val(),
@@ -1002,23 +1016,24 @@ function initialise() {
                 if(err){
                     console.log("Can't create order")
                 }
+                else{
+                    window.LiqPayCheckoutCallback = LiqPay.initialise(res.data, res.signature);
+                    }
             });
-            console.log(Storage.get("cart")) ;
-            alert ("DONE");
+            //console.log(Storage.get("cart")) ;
         }
         else{
             console.log("checkFailed") ;
         }
 
     });
-
 }
 
 
 exports.initialiseOrder = initialise;
 exports.checkAddress = checkAddress;
 
-},{"../API":1,"../GoogleMaps":2,"../LocalStorage":3}],10:[function(require,module,exports){
+},{"../API":1,"../GoogleMaps":2,"../LiqPay":3,"../LocalStorage":4}],11:[function(require,module,exports){
 (function () {
 	// Basil
 	var Basil = function (options) {
@@ -1406,9 +1421,9 @@ exports.checkAddress = checkAddress;
 
 })();
 
-},{}],11:[function(require,module,exports){
-
 },{}],12:[function(require,module,exports){
+
+},{}],13:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -2276,7 +2291,7 @@ if (typeof window != 'undefined') {
   window.ejs = exports;
 }
 
-},{"../package.json":14,"./utils":13,"fs":11,"path":15}],13:[function(require,module,exports){
+},{"../package.json":15,"./utils":14,"fs":12,"path":16}],14:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -2442,7 +2457,7 @@ exports.cache = {
   }
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -2557,7 +2572,7 @@ module.exports={
   "version": "2.5.7"
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2785,7 +2800,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":16}],16:[function(require,module,exports){
+},{"_process":17}],17:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2971,4 +2986,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[6]);
+},{}]},{},[7]);
